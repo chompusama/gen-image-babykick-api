@@ -15,8 +15,11 @@ const hbs = require('handlebars');
 const path = require('path');
 const pdf = require('pdf-poppler');
 const moment = require('moment');
+const line = require('@line/bot-sdk');
 
-async function buildImage (data) {
+async function buildImage(data, line_id) {
+
+    let server = 'https://4e6447d1.ngrok.io';
 
     const compile = async function (templateName, data) {
         const filePath = await path.join(process.cwd(), 'templates', `${templateName}.hbs`);
@@ -30,6 +33,13 @@ async function buildImage (data) {
 
     (async function () {
         try {
+
+            let date = new Date(Date.now());
+            let d = date.getDate();
+            let m = date.getMonth() + 1;
+            let y = date.getFullYear();
+            let sDate = d + '-' + m + '-' + y;
+
             const browser = await puppeteer.launch();
             const page = await browser.newPage();
 
@@ -39,17 +49,17 @@ async function buildImage (data) {
             await page.emulateMedia('screen');
             let height = await page.evaluate(() => document.documentElement.offsetHeight);
             await page.pdf({
-                path: 'uploads/week/' + data.message + '.pdf',
-                height: height + 'px',
+                path: 'uploads/' + data.line_id + 'x' + sDate + '.pdf',
+                // height: height + 'px',
+                height: '10cm',
                 width: '10cm',
                 printBackground: true,
                 pageRanges: '1'
             });
 
-
-            let file = await 'uploads/week/' + data.message + '.pdf';
-            let fileout = 'uploads/week/' + data.message;
-
+            let file = await 'uploads/' + data.line_id + 'x' + sDate + '.pdf';
+            let fileout = 'uploads/' + data.line_id + 'x' + sDate ;
+            let fileImg = fileout + '.jpg'
             let opts = {
                 format: 'jpeg',
                 out_dir: path.dirname(file),
@@ -59,16 +69,48 @@ async function buildImage (data) {
             await pdf.convert(file, opts)
                 .then(res => {
                     console.log('Successfully converted');
-                    fsOld.unlink(file, function() {
+                    fsOld.unlink(file, function () {
                         console.log('Remove pdf file');
-                    })
+                    });
+                    fs.rename(fileout + '-1.jpg', fileImg, function(err) {
+                        if ( err ) console.log('ERROR: ' + err);
+                    });
                 })
                 .catch(error => {
                     console.error(error);
                 })
 
+
             console.log('done');
             await browser.close();
+
+            var imgLink = server + '/' + data.line_id + 'x' + sDate + '.jpg';
+
+            / push message to line */
+            const client = new line.Client({
+                channelAccessToken: 'SCtu4U76N1oEXS3Ahq1EX9nBNkrtbKGdn8so1vbUZaBIXfTlxGqMldJ3Ego3GscxKGUB7MlfR3DHtTbg6hrYPGU9reSTBcCSiChuKmDCMx4FTtIPXzivaYUi3I6Yk1u/yF5k85Le0IUFrkBNxaETxFGUYhWQfeY8sLGRXgo3xvw='
+            });
+            const message = await [
+                {
+                    type: 'text',
+                    text: 'รายงานการนับลูกดิ้น'
+                },
+                {
+                    type: "image",
+                    originalContentUrl: imgLink,
+                    previewImageUrl: imgLink
+                }
+            ]
+            await client.pushMessage(line_id, message)
+                .then(() => {
+                    console.log('push message done!')
+                    fsOld.unlink(file, function () {
+                        console.log('Remove pdf file');
+                    });
+                })
+                .catch((err) => {
+                    console.log(err);   // error when use fake line id 
+                });
 
         } catch (e) {
             console.log('our error', e);
