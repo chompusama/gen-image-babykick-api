@@ -4,7 +4,8 @@
   "description": "image builder",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon server.js"
   },
   "repository": {
     "type": "git",
@@ -15,5 +16,22 @@
   "bugs": {
     "url": "https://github.com/chompusama/gen-image-babykick-api/issues"
   },
-  "homepage": "https://github.com/chompusama/gen-image-babykick-api#readme"
+  "homepage": "https://github.com/chompusama/gen-image-babykick-api#readme",
+  "dependencies": {
+    "@line/bot-sdk": "^6.8.2",
+    "express": "^4.17.1",
+    "fs": "0.0.1-security",
+    "fs-extra": "^8.1.0",
+    "handlebars": "^4.2.0",
+    "hbs": "^4.0.4",
+    "moment": "^2.24.0",
+    "mongoose": "^5.6.12",
+    "morgan": "^1.9.1",
+    "path": "^0.12.7",
+    "pdf-poppler": "^0.2.1",
+    "puppeteer": "^1.19.0"
+  },
+  "devDependencies": {
+    "nodemon": "^1.19.2"
+  }
 }
