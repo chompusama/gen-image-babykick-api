@@ -3,7 +3,7 @@
  *  for build a count summary image
  *  parameter is a json form
  *  json > html > pdf > jpg
- *  developing ...
+ *  @compete @trycatch 
  * 
  *  Created by CPU on 19/8/19
  */
@@ -19,7 +19,7 @@ const line = require('@line/bot-sdk');
 
 async function buildImage(data, line_id) {
 
-    let server = 'https://4e6447d1.ngrok.io';
+    let server = 'https://ecce7749.ngrok.io';
 
     const compile = async function (templateName, data) {
         const filePath = await path.join(process.cwd(), 'templates', `${templateName}.hbs`);
@@ -38,7 +38,13 @@ async function buildImage(data, line_id) {
             let d = date.getDate();
             let m = date.getMonth() + 1;
             let y = date.getFullYear();
+            let hr = date.getHours();
+            let mm = date.getMinutes();
+            let sec = date.getSeconds();
             let sDate = d + '-' + m + '-' + y;
+            let sTime = hr + '-' + mm + '-' + sec;
+
+            console.log('>>>>>' + hr)
 
             const browser = await puppeteer.launch();
             const page = await browser.newPage();
@@ -49,7 +55,7 @@ async function buildImage(data, line_id) {
             await page.emulateMedia('screen');
             let height = await page.evaluate(() => document.documentElement.offsetHeight);
             await page.pdf({
-                path: 'uploads/' + data.line_id + 'x' + sDate + '.pdf',
+                path: 'uploads/' + data.line_id + 'x' + sDate + 'x' + sTime + '.pdf',
                 // height: height + 'px',
                 height: '10cm',
                 width: '10cm',
@@ -57,14 +63,16 @@ async function buildImage(data, line_id) {
                 pageRanges: '1'
             });
 
-            let file = await 'uploads/' + data.line_id + 'x' + sDate + '.pdf';
-            let fileout = 'uploads/' + data.line_id + 'x' + sDate ;
+            let file = await 'uploads/' + data.line_id + 'x' + sDate + 'x' + sTime + '.pdf';
+            let fileout = 'uploads/' + data.line_id + 'x' + sDate + 'x' + sTime ;
             let fileImg = fileout + '.jpg'
             let opts = {
                 format: 'jpeg',
                 out_dir: path.dirname(file),
                 out_prefix: path.basename(fileout, path.extname(file)),
             }
+
+            console.log(fileout)
 
             await pdf.convert(file, opts)
                 .then(res => {
@@ -84,7 +92,7 @@ async function buildImage(data, line_id) {
             console.log('done');
             await browser.close();
 
-            var imgLink = server + '/' + data.line_id + 'x' + sDate + '.jpg';
+            var imgLink = server + '/' + data.line_id + 'x' + sDate + 'x' + sTime + '.jpg';
 
             / push message to line */
             const client = new line.Client({

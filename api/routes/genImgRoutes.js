@@ -54,7 +54,7 @@ router.post("/", (req, res, next) => {
                 function listCounting(week) {
                     if (docs.timer_status == 'timeout' && docs.counting[(docs.counting.length) - 1].status == 'close') {
                         var list = [];
-                        for (var i = 0; i < countingLength; i++) {
+                        for (var i = 0; i < 7 ; i++) {    // countingLength
                             var arr = docs.counting[i];
                             if (arr.week_by_date == week) {
                                 var emoji
