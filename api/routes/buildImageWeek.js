@@ -19,7 +19,7 @@ const line = require('@line/bot-sdk');
 
 async function buildImage(data, line_id) {
 
-    let server = 'https://ecce7749.ngrok.io';
+    let server = 'https://49f6f2f9.ngrok.io';     / change when deployed */
 
     const compile = async function (templateName, data) {
         const filePath = await path.join(process.cwd(), 'templates', `${templateName}.hbs`);
