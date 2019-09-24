@@ -30,9 +30,7 @@
     "node-cron": "^2.0.3",
     "path": "^0.12.7",
     "pdf-poppler": "^0.2.1",
-    "puppeteer": "^1.19.0"
-  },
-  "devDependencies": {
+    "puppeteer": "^1.19.0",
     "nodemon": "^1.19.2"
   }
 }
